@@ -15,7 +15,7 @@ The library provides high-level API to catch following events:
 | `include/`                 | Includes to use library in your code      |
 | `tests/`                   | Simple auto-tests implementation          |
 | `example/`                 | Examples of using TcpStream library       |
-| `example/tcp_stream_dump/` | Sample application to view TCP streams<br> flowing through specified network interface.<br>PCAP library used to catch ethernet packets |
+| `example/tcp_stream_dump/` | Sample application to view TCP streams<br> flowing through specified network interface.<br>PCAP library used to catch Ethernet packets |
 
 ## Dependencies
 
@@ -53,7 +53,7 @@ Usage sample pseudocode:
 
   while (<not all packets processed>)
   {
-    packet = <get next packet>
+    packet = <get next ethernet packet raw data>
     timestamp = <packet timestamp>
     size = <packet size>
 
