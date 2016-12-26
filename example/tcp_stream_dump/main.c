@@ -7,6 +7,7 @@
 
 #include <signal.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 size_t streamId = 0;
 
