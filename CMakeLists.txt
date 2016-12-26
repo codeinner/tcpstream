@@ -17,7 +17,7 @@ if (MSVC)
     set(CMAKE_STATIC_LINKER_FLAGS "/LTCG ${CMAKE_STATIC_LINKER_FLAGS}")
 endif()
 
-set(COMMON_INCLUDES "include/log.h" "include/vector.h" "include/packet_processing.h")
+set(COMMON_INCLUDES "include/vector.h" "include/packet_processing.h")
 
 aux_source_directory(src LIBRARY_SOURCES)
 

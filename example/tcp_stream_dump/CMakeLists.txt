@@ -20,6 +20,8 @@ endif()
 
 add_executable( tcp_stream_dump
                 main.c
+                errors.h
+                log.h
                 sniffer.c
                 sniffer.h)
 set_target_properties(tcp_stream_dump PROPERTIES LINKER_LANGUAGE C)
