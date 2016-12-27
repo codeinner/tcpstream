@@ -24,11 +24,13 @@ aux_source_directory(src LIBRARY_SOURCES)
 add_library(tcpstream STATIC ${LIBRARY_SOURCES} ${COMMON_INCLUDES})
 set_target_properties(tcpstream PROPERTIES LINKER_LANGUAGE C)
 
-add_subdirectory("example/tcp_stream_dump")
-
 set(TEST_NAME ${PROJECT_NAME}_test)
 file(GLOB TESTS_SOURCES "tests/*.h" "tests/*.c")
 add_executable(${TEST_NAME} ${TESTS_SOURCES} ${COMMON_INCLUDES})
 target_link_libraries(${TEST_NAME} tcpstream)
 set_target_properties(${TEST_NAME} PROPERTIES LINKER_LANGUAGE C)
 add_test(${TEST_NAME} ${EXECUTABLE_OUTPUT_PATH}/${TEST_NAME})
+
+if (${BUILD_EXAMPLES})
+    add_subdirectory("example/tcp_stream_dump")
+endif()

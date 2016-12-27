@@ -12,7 +12,7 @@ The library provides high-level API to catch following events:
 | Directory                  | Description                               |
 |----------------------------|-------------------------------------------|
 | `src/`                     | Source code of the library                |
-| `include/`                 | Includes to use library in your code      |
+| `include/`                 | Includes to use the library in your code  |
 | `tests/`                   | Simple auto-tests implementation          |
 | `example/`                 | Examples of using TcpStream library       |
 | `example/tcp_stream_dump/` | Sample application to view TCP streams<br> flowing through specified network interface.<br>PCAP library used to catch Ethernet packets |
@@ -67,14 +67,25 @@ Usage sample pseudocode:
 
 ## Build
 
-You can create `Release` build simply by invoking
+To create `Release` build simply invoke
 * `make.bat` on Windows hosts
 * `make.sh` on Unix-based systems
 
-Note that scripts above will automatically run tests after build.
+To build `examples` call
+* `make_exaples.bat` on Windows hosts
+* `make_exaples.sh` on Unix-based systems
 
-To make a debug build use `cmake` to build library.  
-To manually run tests call `ctest` in cmake output directory.
+**Note**: scripts above will automatically run tests after build.
+
+To build the library manually:
+```cmd
+mkdir <cmake_cache_dir>
+cd <cmake_cache_dir>
+cmake [-D BUILD_EXAMPLES=1] ./..
+cmake --build . --config [Release|Debug]
+ctest . --output-on-failure
+cd ..
+```
 
 ## Example
 
