@@ -71,7 +71,7 @@ To create `Release` build simply invoke
 * `make.bat` on Windows hosts
 * `make.sh` on Unix-based systems
 
-To build `examples` call
+To build `examples` call (read `Examples` section below about pre-requirements)
 * `make_exaples.bat` on Windows hosts
 * `make_exaples.sh` on Unix-based systems
 
@@ -87,7 +87,7 @@ ctest . --output-on-failure
 cd ..
 ```
 
-## Example
+## Examples
 
 The library provided with sample application `tcp_stream_dump`. It uses `PCAP` library to capture ethernet packets from network adapter.
 So you need to install:
