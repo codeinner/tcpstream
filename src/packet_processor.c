@@ -3,12 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool ConnectionData(PacketProcessor* instance, Connection* connection, bool client, const void* data, unsigned short size)
-{
-  Vector* dataStorage = client ? connection->Outgoing : connection->Incoming;
-  return VectorAppend(dataStorage, data, size);
-}
-
 bool ConnectionFlushData(Connection* connection, bool outgoing)
 {
   Vector* bufferedData = !outgoing ? connection->Outgoing : connection->Incoming;
