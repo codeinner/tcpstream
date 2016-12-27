@@ -145,11 +145,6 @@ void RemoveConnection(PacketProcessor* instance, Connection* connection)
   free(connection);
 }
 
-ParseHttpsResult ParseHttps(Connection* connection)
-{
-  return MoreData;
-}
-
 bool ProcessTcpHandshakeInit(Connection* connection, bool outgoing, ip source, ip destination, const TCP_HEADER* tcp)
 {
   unsigned int nextSequence;
