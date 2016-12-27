@@ -6,15 +6,20 @@
 bool ConnectionFlushData(Connection* connection, bool outgoing)
 {
   Vector* bufferedData = !outgoing ? connection->Outgoing : connection->Incoming;
-  size_t bufferedDataSize = VectorGetSize(bufferedData);
+  void* data;
+  size_t size;
+  void* userData;
   bool proceedStreamMonoitoring;
 
-  if (bufferedDataSize == 0)
+  size = VectorGetSize(bufferedData);
+  if (size == 0)
   {
     return true;
   }
-
-  proceedStreamMonoitoring = connection->Callbacks->OnData(connection->UserData, !outgoing, VectorGetBuffer(bufferedData), bufferedDataSize);
+  
+  userData = connection->UserData;
+  data = VectorGetBuffer(bufferedData);
+  proceedStreamMonoitoring = connection->Callbacks->OnData(userData, !outgoing, data, size);
   if (!proceedStreamMonoitoring)
   {
     return false;
@@ -22,11 +27,11 @@ bool ConnectionFlushData(Connection* connection, bool outgoing)
 
   if (!outgoing)
   {
-    connection->SourceSequence += bufferedDataSize;
+    connection->SourceSequence += size;
   }
   else
   {
-    connection->DestinationSequence += bufferedDataSize;
+    connection->DestinationSequence += size;
   }
 
   VectorClear(bufferedData);
@@ -139,7 +144,7 @@ void RemoveConnection(PacketProcessor* instance, Connection* connection)
   free(connection);
 }
 
-bool ProcessTcpHandshakeInit(Connection* connection, bool outgoing, ip source, ip destination, const TCP_HEADER* tcp)
+bool ProcessTcpHandshakeInit(Connection* connection, const TCP_HEADER* tcp, bool outgoing)
 {
   unsigned int nextSequence;
 
@@ -165,10 +170,14 @@ bool ProcessTcpHandshakeInit(Connection* connection, bool outgoing, ip source, i
   return true;
 }
 
-bool ProcessTcpHandshakeFinal(Connection* connection, ip source, ip destination, const TCP_HEADER* tcp, bool outgoing)
+bool ProcessTcpHandshakeFinal(Connection* connection, const TCP_HEADER* tcp, bool outgoing)
 {
   unsigned int nextSequence;
   bool shouldMonitor;
+  ip sourceIp;
+  ip destinationIp;
+  port sourcePort;
+  port destinationPort;
 
   if (!outgoing)
   {
@@ -181,7 +190,11 @@ bool ProcessTcpHandshakeFinal(Connection* connection, ip source, ip destination,
     return false;
   }
 
-  shouldMonitor = connection->Callbacks->OnNew(source, HTONS(tcp->SourcePort), destination, HTONS(tcp->DestinationPort), &connection->UserData);
+  sourceIp = HTONL(connection->SourceIp);
+  sourcePort = HTONS(tcp->SourcePort);
+  destinationIp = HTONL(connection->DestinationIp);
+  destinationPort = HTONS(tcp->DestinationPort);
+  shouldMonitor = connection->Callbacks->OnNew(sourceIp, sourcePort, destinationIp, destinationPort, &connection->UserData);
   if (!shouldMonitor)
   {
     return false;
@@ -233,9 +246,10 @@ bool ProcessTcpCommunication(Connection* connection, const TCP_HEADER* tcp, bool
   return true;
 }
 
-bool ProcessTcpFrame(PacketProcessor* instance, long timestamp, ip source, ip destination, const unsigned char* packet, unsigned short size)
+bool ProcessTcpFrame(PacketProcessor* instance, long timestamp, const IpFrameInfo* ipInfo)
 {
-  const TCP_HEADER* tcp = (const TCP_HEADER*)packet;
+  const TCP_HEADER* tcp = (const TCP_HEADER*)ipInfo->TcpFrame;
+  unsigned short size = ipInfo->TcpFrameSize;
   unsigned short tcpHeaderSize;
   unsigned short tcpPayloadSize;
   const unsigned char* tcpPayload;
@@ -256,11 +270,11 @@ bool ProcessTcpFrame(PacketProcessor* instance, long timestamp, ip source, ip de
 
   if (tcp->SYN && !tcp->ACK)
   {
-    connection = AddConnection(instance, source, destination, tcp);
+    connection = AddConnection(instance, ipInfo->Source, ipInfo->Destination, tcp);
     return connection != NULL;
   }
 
-  connection = FindConnection(instance, source, destination, tcp, &outgoing);
+  connection = FindConnection(instance, ipInfo->Source, ipInfo->Destination, tcp, &outgoing);
   if (connection == NULL)
   {
     return true;
@@ -277,7 +291,7 @@ bool ProcessTcpFrame(PacketProcessor* instance, long timestamp, ip source, ip de
   {
     case TcpSynSent:
     {
-      success = ProcessTcpHandshakeInit(connection, outgoing, source, destination, tcp);
+      success = ProcessTcpHandshakeInit(connection, tcp, outgoing);
       if (success)
       {
         connection->State = TcpSynAckRecieved;
@@ -286,7 +300,7 @@ bool ProcessTcpFrame(PacketProcessor* instance, long timestamp, ip source, ip de
     }
     case TcpSynAckRecieved:
     {
-      success = ProcessTcpHandshakeFinal(connection, source, destination, tcp, outgoing);
+      success = ProcessTcpHandshakeFinal(connection, tcp, outgoing);
       if (success)
       {
         connection->State = TcpEstablished;
@@ -407,5 +421,5 @@ bool ProcessEthernetFrame(void* packetProcessor, long timestamp, const unsigned 
     return false;
   }
 
-  return ProcessTcpFrame(instance, timestamp, ipInfo.Source, ipInfo.Destination, ipInfo.TcpFrame, ipInfo.TcpFrameSize);
+  return ProcessTcpFrame(instance, timestamp, &ipInfo);
 }
