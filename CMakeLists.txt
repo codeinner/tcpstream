@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(tcpstream LANGUAGES C)
+project(tcpstream C)
 
 enable_testing()
 
