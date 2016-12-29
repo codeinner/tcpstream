@@ -1,0 +1,15 @@
+dependencies:
+  override:
+    - sudo apt-get update
+    - sudo apt-get -y install cmake curl
+
+  post:
+    - cmake -D COVERAGE=1
+    - cmake --build . --config Debug
+
+test:
+  override:
+    - ctest .
+
+  post:
+    - curl -s https://codecov.io/bash | bash
