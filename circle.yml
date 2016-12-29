@@ -4,7 +4,7 @@ dependencies:
     - sudo apt-get -y install cmake curl
 
   post:
-    - cmake -D COVERAGE=1
+    - cmake -D COVERAGE=1 .
     - cmake --build . --config Debug
 
 test:
