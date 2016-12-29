@@ -83,7 +83,9 @@ Connection* AddConnection(PacketProcessor* instance, ip source, ip destination, 
 
 Connection* FindConnection(PacketProcessor* instance, ip source, ip destination, const TCP_HEADER* tcp, bool* client)
 {
-  for (Connection* current = instance->Connections; current != NULL; current = current->Next)
+  Connection* current;
+
+  for (current = instance->Connections; current != NULL; current = current->Next)
   {
     if (current->DestinationIp == destination &&
         current->DestinationPort == tcp->DestinationPort &&
