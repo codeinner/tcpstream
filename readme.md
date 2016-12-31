@@ -1,5 +1,8 @@
 # TcpStream
 
+[![Build Status](https://circleci.com/gh/codeinner/tcpstream/tree/master.svg?style=shield)](https://circleci.com/gh/codeinner/tcpstream)
+[![Coverage](https://codecov.io/github/codeinner/tcpstream/coverage.svg?branch=master)](https://codecov.io/github/codeinner/tcpstream?branch=master)
+
 **TcpStream** is a library for assembling user-provided Ethernet packets into TCP streams.  
 The library provides high-level API to catch following events:
 
